@@ -43,7 +43,6 @@ var generalBin = new GameObject(HEIGHT + 15, 475, 175, 175, 0, generalBinImage, 
 var plasticBin = new GameObject(HEIGHT + 15, 300, 175, 175, 0, plasticBinImage, 'bin', ctx)
 var glassBin = new GameObject(HEIGHT + 15, 125, 175, 175, 0, glassBinImage, 'bin', ctx)
 
-const binGeneral = 
 
 floatingList.push(fish)
 floatingList.push(fish2)
