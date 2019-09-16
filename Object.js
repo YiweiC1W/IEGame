@@ -1,5 +1,5 @@
 class GameObject {
-    constructor(x, y, width, height, speed, img, type){
+    constructor(x, y, width, height, speed, img, type, ctx){
         this.x = x;
         this.y = y;
         this.width = width;
@@ -7,15 +7,21 @@ class GameObject {
         this._img = img
         this._type = type
         this.speed = speed
+        this.ctx = ctx
+        this.isDragging = false
     }
 
-    drwaObject(ctx){
-        ctx.drawImage(this._img, this.x, this.y, this.width, this.height);
+    drwaObject(){
+        this.ctx.drawImage(this._img, this.x, this.y, this.width, this.height);
     }
 
     move(addx, addy){
         this.x += addx
         this.y += addy
+    }
+
+    isMouseInObject(mx, my){
+        return(mx>this.x && mx<this.x+this.width && my>this.y && my<this.y+this.height)
     }
 }
 
