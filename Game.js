@@ -1,3 +1,6 @@
+let welcomeImage = new Image()
+welcomeImage.src = 'Assets/welcome.png';
+
 let fishImage = new Image()
 fishImage.src = 'Assets/nemo.png';
 
@@ -15,6 +18,10 @@ fishImage5.src = 'Assets/seahorse.png';
 
 let fishImage6 = new Image()
 fishImage6.src = 'Assets/shark.png';
+
+
+let feedbackguide = new Image()
+feedbackguide.src = 'Assets/feedback_guide.png';
 
 
 let bkgdImage = new Image()
@@ -103,18 +110,20 @@ rightImage.src = 'BinImage/cool.png';
 let wrongImage = new Image();
 wrongImage.src = 'BinImage/error.png';
 
-let bkgdMusic = new sound('Sound/bkgdmusic.mp3', 0.1)
+let bkgdMusic = new sound('Sound/bkgdmusic.mp3', 0.2)
 let bkgdSound = new sound('Sound/river.mp3', 0.3)
 let winSound = new sound('Sound/win.mp3')
 let failSound = new sound('Sound/fail.mp3')
 let openBinSound = new sound('Sound/openBin.mp3', 1)
 let dropRubbishSound = new sound('Sound/dropRubbish.mp3', 1)
 let hitSound = new sound('Sound/hit.mp3', 0.4)
-let clickSound = new sound('Sound/click.mp3', 0.5)
+let clickSound = new sound('Sound/click.mp3', 0.4)
+let sharkSound = new sound('Sound/shark.mp3', 1)
 
 let floatingList = [];
 let floatingStorage = [];
 let binList = []
+let timmer = 0
 
 const canvas = document.getElementById("ctx");
 const ctx = canvas.getContext("2d");
@@ -136,7 +145,7 @@ canvas.onmousedown = mouseDown;
 canvas.onmouseup = mouseUp;
 canvas.onmousemove = mouseMove;
 
-var bkgd = new GameObject(0, 0, WIDTH-200, HEIGHT, 0, bkgdImage, 'bkgd', ctx, bkgdImage)
+var bkgd = new GameObject(0, 0, WIDTH - 200, HEIGHT, 0, bkgdImage, 'bkgd', ctx, bkgdImage)
 var fish = new GameObject(0, 400, 50, 50, 1, fishImage, 'fish', ctx, fishImage)
 var fish2 = new GameObject(0, 50, 50, 50, 1, fishImage2, 'fish', ctx, fishImage2)
 var fish3 = new GameObject(0, 50, 50, 50, 1, fishImage3, 'fish', ctx, fishImage3)
@@ -158,10 +167,10 @@ var rubbish10 = new GameObject(0, 350, 50, 50, 1, rubbishImage10, "recycle", ctx
 var rubbish11 = new GameObject(0, 350, 50, 50, 1, rubbishImage11, "general", ctx, rubbishImage11)
 var rubbish12 = new GameObject(0, 350, 50, 50, 1, rubbishImage12, "general", ctx, rubbishImage12)
 var rubbish13 = new GameObject(0, 350, 50, 50, 1, rubbishImage13, "general", ctx, rubbishImage13)
-var rubbish14 = new GameObject(0, 350, 50, 50, 1, rubbishImage14, "general", ctx, rubbishImage14)
+var rubbish14 = new GameObject(0, 350, 50, 50, 1, rubbishImage14, "recycle", ctx, rubbishImage14)
 var rubbish15 = new GameObject(0, 350, 50, 50, 1, rubbishImage15, "recycle", ctx, rubbishImage15)
 var rubbish16 = new GameObject(0, 350, 50, 50, 1, rubbishImage16, "general", ctx, rubbishImage16)
-var rubbish17 = new GameObject(0, 350, 50, 50, 1, rubbishImage17, "general", ctx, rubbishImage17)
+var rubbish17 = new GameObject(0, 350, 50, 50, 1, rubbishImage17, "organic", ctx, rubbishImage17)
 var rubbish18 = new GameObject(0, 350, 50, 50, 1, rubbishImage18, "general", ctx, rubbishImage18)
 var rubbish19 = new GameObject(0, 350, 50, 50, 1, rubbishImage19, "organic", ctx, rubbishImage19)
 
@@ -169,9 +178,9 @@ var rubbish19 = new GameObject(0, 350, 50, 50, 1, rubbishImage19, "organic", ctx
 
 var result = new GameObject(100, 100, 80, 80, 0, rightImage, "result", ctx, wrongImage)
 
-var generalBin = new GameObject(WIDTH-200 + 5, 455, 200, 200, 0, generalBinImage, 'general', ctx, generalBinImageClose)
-var recycleBin = new GameObject(WIDTH-200 + 5, 255, 200, 200, 0, plasticBinImage, 'recycle', ctx, plasticBinImageClose)
-var organicBin = new GameObject(WIDTH-200 + 5, 55, 200, 200, 0, glassBinImage, 'organic', ctx, glassBinImageClose)
+var generalBin = new GameObject(WIDTH - 200 + 5, 455, 200, 200, 0, generalBinImage, 'general', ctx, generalBinImageClose)
+var recycleBin = new GameObject(WIDTH - 200 + 5, 255, 200, 200, 0, plasticBinImage, 'recycle', ctx, plasticBinImageClose)
+var organicBin = new GameObject(WIDTH - 200 + 5, 55, 200, 200, 0, glassBinImage, 'organic', ctx, glassBinImageClose)
 
 
 floatingStorage.push(fish)
@@ -188,7 +197,7 @@ floatingStorage.push(rubbish3)
 floatingStorage.push(rubbish4)
 floatingStorage.push(rubbish5)
 floatingStorage.push(rubbish6)
-floatingStorage.push.apply(floatingStorage,[fish5, fish6, rubbish6, rubbish7,rubbish8,rubbish9,rubbish10,rubbish11,rubbish12,rubbish13,rubbish14,rubbish15,rubbish16,rubbish17,rubbish18,rubbish19])
+floatingStorage.push.apply(floatingStorage, [fish5, fish6, rubbish6, rubbish7, rubbish8, rubbish9, rubbish10, rubbish11, rubbish12, rubbish13, rubbish14, rubbish15, rubbish16, rubbish17, rubbish18, rubbish19])
 
 
 let pause = true
@@ -231,16 +240,59 @@ var startX;
 var startY;
 
 window.onload = function () {
+    displayWelcome()
     intervalVar = setInterval(runGame, 10); // 100 fps game
     resultVar = setInterval(hideResult, 800)
     floatingVar = setInterval(generateRandomFloating, 1000)
 }
 
+displayWelcome = function () {
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.drawImage(bkgdImage, 0, 0, WIDTH + 20, HEIGHT);
+    ctx.drawImage(welcomeImage, 335, 0, 400, 600);
+}
+
+drawFirstTime = function (firstTime) {
+    if (firstime < 60 && !pause) {
+        if (firstime < 10) {
+            sharkSound.play()
+        }
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(bkgdImage, 0, 0, WIDTH + 20, HEIGHT);
+        ctx.drawImage(welcomeImage, 335, 0, 400, 600);
+        ctx.drawImage(fishImage6, -800 + firstime * 20, -50)
+    }
+    else if (firstime >= 60 && firstime <= 80) {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(bkgdImage, 0, 0, WIDTH + 20, HEIGHT);
+        ctx.drawImage(welcomeImage, 335, 0, 400, 600);
+        ctx.drawImage(fishImage6, 400, -50)
+    }
+}
+
+let firstime = 0
 runGame = function () {
-    bkgdMusic.play();
     bkgdSound.play();
-    changeBackgroundColor();
-    updatePosition();
+    bkgdMusic.play();
+    drawFirstTime(firstime)
+    if (!pause) { firstime++ }
+    if (firstime > 120) {
+        if (timmer < 6000) {
+            changeBackgroundColor();
+            updatePosition();
+        }
+        else {
+            displayEnd()
+        }
+    }
+}
+
+
+displayEnd = function () {
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.font = "30px Georgia";
+    ctx.fillStyle = 'white'
+    ctx.fillText("Final Score: " + score, 50, 50);
 }
 
 changeBackgroundColor = function () {
@@ -248,9 +300,9 @@ changeBackgroundColor = function () {
         canvas.style.backgroundColor = 'rgb(61, 41, 41)';
     } else if (score < targetScore) {
         let color = Math.min(targetScore, score)
-        let red = color * (196 - 61)/targetScore+ 61
-        let green = color * (241 - 41)/targetScore + 41
-        let blue = color * (255-41)/targetScore + 41
+        let red = color * (196 - 61) / targetScore + 61
+        let green = color * (241 - 41) / targetScore + 41
+        let blue = color * (255 - 41) / targetScore + 41
         canvas.style.backgroundColor = 'rgb(' + red + ',' + green + ',' + blue + ')';
     }
 }
@@ -261,9 +313,10 @@ hideResult = function () {
 
 updatePosition = function () {
     if (pause) {
-        return
+        showInformation()
     }
     else {
+        timmer++
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
         //this.generalBin.drawObject();
         this.bkgd.drawObject();
@@ -275,12 +328,13 @@ updatePosition = function () {
         }
         ctx.font = "30px Georgia";
         ctx.fillStyle = 'white'
-        ctx.fillText("Score: " + score, WIDTH-200 + 25, 45);
+        ctx.fillText("Score: " + score, WIDTH - 200 + 25, 45);
+        ctx.fillText("Time: " + (6000 - timmer)/100 + "s", 25, 45);
         for (let i = 0; i < floatingList.length; i++) {
             let floating = floatingList[i]
             if (floating.isDragging == false) {
                 floating.x = (floating.x + floating.speed)
-                if (floating.x < WIDTH-200 - floating.width) {
+                if (floating.x < WIDTH - 200 - floating.width) {
                     floating.drawObject()
                 } else {
 
@@ -306,13 +360,18 @@ updatePosition = function () {
     }
 }
 
+showInformation = function(){
+    pause = true
+    ctx.drawImage(feedbackguide, 0, 0)
+}
+
 document.onkeydown = function (e) {
     if (e.keyCode == 13) {
         pause = !pause
     }
 }
 function mouseDown(e) {
-
+    if (pause) {return}
     // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
@@ -337,6 +396,7 @@ function mouseDown(e) {
 }
 
 function mouseUp(e) {
+    if (pause) {return}
     // tell the browser we're handling this mouse event
     e.preventDefault();
     e.stopPropagation();
@@ -369,7 +429,7 @@ function mouseUp(e) {
                     hitSound.stop()
                     hitSound.play()
                 }
-                
+
                 floatingList.splice(i, 1)
                 i = i - 1
             }
@@ -377,7 +437,10 @@ function mouseUp(e) {
     }
 }
 
+
+
 function mouseMove(e) {
+    if (pause) {return}
     if (dragok) {
 
         // tell the browser we're handling this mouse event
@@ -426,11 +489,10 @@ function sound(src, volume = 0) {
     this.sound.style.display = "none";
     document.body.appendChild(this.sound);
     this.play = function () {
-        this.sound.play(); //没有就播放 
+        this.sound.play(); 
     }
     this.stop = function () {
         this.sound.pause();
         this.sound.currentTime = 0;
     }
 }
-
